@@ -1,0 +1,22 @@
+#!/usr/bin/perl -w
+
+use LWP::Simple;
+
+my $url = shift;
+my $regex = shift;
+
+my $data = get($url);
+if(!$data) {
+    print(STDERR "unable to fetch checkurl\n");
+    exit;
+}
+
+if($data =~ /$regex/) {
+    if($1) {
+        print("$1\n");
+    } else {
+        print(STDERR "no reference found\n");
+    }
+} else {
+    print(STDERR "regex does not match\n");
+}
