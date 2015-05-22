@@ -27,7 +27,6 @@ perldoc -o nroff -d %{name}.8 -w center:%{name} -w section:8 %{name}
 %install
 %{__rm} -rf %{buildroot}
 %{__mkdir_p} %{buildroot}/%{_sbindir}/
-%{__mkdir_p} %{buildroot}%{_unitdir}/
 %{__mkdir_p} %{buildroot}/%{_sysconfdir}/sysconfig/
 %{__mkdir_p} %{buildroot}/%{_sysconfdir}/%{name}/modules
 %{__mkdir_p} %{buildroot}/%{_mandir}/man8
@@ -39,6 +38,8 @@ perldoc -o nroff -d %{name}.8 -w center:%{name} -w section:8 %{name}
 %{__install} -m 644 contrib/rhel7/ddnsd.sysconfig %{buildroot}/%{_sysconfdir}/sysconfig/%{name}
 %{__mkdir_p} %{buildroot}/%{_sysconfdir}/NetworkManager/dispatcher.d
 %{__install} -m 755 contrib/rhel7/ddnsd.NetworkManager %{buildroot}/%{_sysconfdir}/NetworkManager/dispatcher.d/50-%{name}
+%{__mkdir_p} %{buildroot}/%{_unitdir}/
+%{__install} -m 755 contrib/rhel7/ddnsd.service %{buildroot}/%{_unitdir}/%{name}.service
 %{__mkdir_p} %{buildroot}/%{_localstatedir}/run/%{name}
 
 %post
@@ -51,16 +52,16 @@ perldoc -o nroff -d %{name}.8 -w center:%{name} -w section:8 %{name}
 %systemd_postun_with_restart ddnsd.service
 
 %files
-%{_sysconfdir}/NetworkManager/dispatcher.d/50-%{name}
 %{_sysconfdir}/%{name}/modules/ipcheck.url
 %{_sysconfdir}/%{name}/modules/ipcheck.interface
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
 %{_sbindir}/%{name}
 %{_mandir}/man8/%{name}.8.gz
+%{_sysconfdir}/NetworkManager/dispatcher.d/50-%{name}
+%{_unitdir}/%{name}.service
 %dir %{_localstatedir}/run/%{name}/
 
 %changelog
 * Fri May 22 2015 Frank Enderle <frank.enderle@anamica.de> 1.0.2-1
 Initial release for RHEL7 and compatibles
-
