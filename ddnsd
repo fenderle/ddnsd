@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# Copyright (c) 2011, Frank Enderle, anamica GmbH
+# Copyright (c) 2011-2015, Frank Enderle, anamica GmbH
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without 
@@ -34,7 +34,7 @@
 #
 use strict;
 
-use Config::IniHash;
+use Config::IniFiles;
 use Getopt::Long qw(:config no_ignore_case);
 use Unix::Syslog qw(:macros :subs);
 use IO::File;
@@ -43,8 +43,9 @@ use Net::IP;
 use IPC::Open3;
 use IO::Select;
 use Pod::Usage;
+use Storable qw(dclone);
 
-my $VERSION = "1.0.1";
+my $VERSION = "1.0.2";
 
 # init syslog
 openlog("ddnsd", LOG_PID, LOG_DAEMON);
@@ -185,17 +186,19 @@ sub processArgs {
 
 sub processConfig {
     # read config and setup vars
-    my $cfg = ReadINI($par->{config}, { 
-        allow_multiple => { "ipcheck" => [ "arg" ] }
-    }) || return;
-    
+    my %ini;
+    if (-f $par->{config}) {
+        tie %ini, 'Config::IniFiles', (-file => $par->{config});
+    }
+
     # defaults
-    $cfg->{global}->{modules}  = $cfg->{global}->{modules}  || "/etc/ddnsd/modules";
-    $cfg->{global}->{pidfile}  = $cfg->{global}->{pidfile}  || "/var/run/ddnsd/ddnsd.pid";
-    $cfg->{global}->{daemon}   = ($cfg->{global}->{daemon}  || "false") eq "true" ? 1 : 0;
-    $cfg->{global}->{debug}    = ($cfg->{global}->{debug}   || "false") eq "true" ? 1 : 0;
-    $cfg->{global}->{interval} = $cfg->{global}->{interval} || 300;
-    $cfg->{ipcheck}->{arg}     = $cfg->{ipcheck}->{arg}     || [];
+    my $cfg = dclone(\%ini);
+    $cfg->{global}->{modules}  = $ini{global}{modules}  || "/etc/ddnsd/modules";
+    $cfg->{global}->{pidfile}  = $ini{global}{pidfile}  || "/var/run/ddnsd/ddnsd.pid";
+    $cfg->{global}->{daemon}   = ($ini{global}{daemon}  || "false") eq "true" ? 1 : 0;
+    $cfg->{global}->{debug}    = ($ini{global}{debug}   || "false") eq "true" ? 1 : 0;
+    $cfg->{global}->{interval} = $ini{global}{interval} || 300;
+    $cfg->{ipcheck}->{arg}     = $ini{ipcheck}{arg}     || [];
     
     if(!$cfg->{ipcheck}->{module}) {
         $cfg->{ipcheck}->{module} = "url";
@@ -343,7 +346,7 @@ sub getIP {
    
     close(CMD_OUT);
     close(CMD_ERR);
- 
+
     waitpid($pid, 0);
 
     return \@result;
@@ -353,11 +356,10 @@ sub getAutoZone {
     # automatically determine zone from dns entry
     my $record = shift;
 
-    # iteratively go through the dns name and find the first NS
+    # try to find the first SOA in the path
     my $res = Net::DNS::Resolver->new();
-
     while($record ne "") {
-        my $response = $res->query($record, "NS");
+        my $response = $res->query($record, "SOA");
         if($response) {
             return $record;
         }
