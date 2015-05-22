@@ -257,10 +257,11 @@ sub performUpdate {
         my $res = Net::DNS::Resolver->new() || next;
         $res->nameserver($server);
 
-        my $qry = $res->search($record) || next;
-        foreach my $rr ($qry->answer) {
-            if($rr->type eq "A" || $rr->type eq "AAAA") { 
-                push(@cips, Net::IP->new($rr->address)); 
+        if (my $qry = $res->search($record)) {
+            foreach my $rr ($qry->answer) {
+                if($rr->type eq "A" || $rr->type eq "AAAA") { 
+                    push(@cips, Net::IP->new($rr->address)); 
+                }
             }
         }
 
