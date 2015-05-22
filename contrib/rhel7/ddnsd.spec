@@ -6,9 +6,6 @@ License:           MIT
 Group:             System Environment/Daemons
 URL:               http://www.anamica.de/ddnsd
 Source0:           %{name}-%{version}.tar.bz2
-Source1:           ddnsd.service
-Source2:           ddnsd.sysconfig
-Source3:           ddnsd.NetworkManager
 BuildArch:         noarch
 Requires:          perl(LWP::Simple)
 BuildRoot:         %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -39,9 +36,9 @@ perldoc -o nroff -d %{name}.8 -w center:%{name} -w section:8 %{name}
 %{__install} -m 600 %{name}.conf %{buildroot}/%{_sysconfdir}/%{name}/%{name}.conf
 %{__install} -m 755 ipcheck.url %{buildroot}/%{_sysconfdir}/%{name}/modules/ipcheck.url
 %{__install} -m 755 ipcheck.interface %{buildroot}/%{_sysconfdir}/%{name}/modules/ipcheck.interface
-%{__install} -m 644 %{SOURCE2} %{buildroot}/%{_sysconfdir}/sysconfig/%{name}
+%{__install} -m 644 contrib/rhel7/ddnsd.sysconfig %{buildroot}/%{_sysconfdir}/sysconfig/%{name}
 %{__mkdir_p} %{buildroot}/%{_sysconfdir}/NetworkManager/dispatcher.d
-%{__install} -m 755 %{SOURCE3} %{buildroot}/%{_sysconfdir}/NetworkManager/dispatcher.d/50-%{name}
+%{__install} -m 755 contrib/rhel7/ddnsd.NetworkManager %{buildroot}/%{_sysconfdir}/NetworkManager/dispatcher.d/50-%{name}
 %{__mkdir_p} %{buildroot}/%{_localstatedir}/run/%{name}
 
 %post
@@ -66,3 +63,4 @@ perldoc -o nroff -d %{name}.8 -w center:%{name} -w section:8 %{name}
 %changelog
 * Fri May 22 2015 Frank Enderle <frank.enderle@anamica.de> 1.0.2-1
 Initial release for RHEL7 and compatibles
+
