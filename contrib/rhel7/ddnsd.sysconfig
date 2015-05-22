@@ -1,0 +1,4 @@
+#
+# ddnsd service options, see ddnsd --help for what's available.
+#
+DDNSD_OPTIONS=""
