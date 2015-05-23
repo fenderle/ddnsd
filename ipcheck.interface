@@ -1,3 +1,0 @@
-#!/bin/bash
-
-/sbin/ip addr show "${1}" | perl -ne '/inet ([\d\.]+)/ && print("$1\n")'

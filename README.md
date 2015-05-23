@@ -1,3 +1,6 @@
+
+> This is a rewrite using native C++, ldns, pcre and curl
+
 # ddnsd - A simple DDNS updater
 This is a little tool which helps keeping DDNS records up to date. This is
 not to be confused with the well known Dynamic DNS services like dyn.com or
