@@ -11,33 +11,33 @@
 class App
 {
 public:
-	App();
-	virtual ~App();
+    App();
+    virtual ~App();
 
-	inline std::string lastError() const
-	{ return _error;}
+    inline std::string lastError() const
+    { return _error;}
 
-	inline std::string ip() const
-	{ return _ip; }
+    inline std::string ip() const
+    { return _ip; }
 
-	bool setConfig(const Config &cfg);
+    bool setConfig(const Config &cfg);
 
-	bool refreshIP();
-
-private:
-	static int writer(char *data, size_t size, size_t nmemb, std::string *buffer);
+    bool refreshIP();
 
 private:
-	Config _config;
-	std::string _error;
+    static int writer(char *data, size_t size, size_t nmemb, std::string *buffer);
 
-	CURL *_curl;
-	char *_curl_error;
+private:
+    Config _config;
+    std::string _error;
 
-	pcre *_re;
-	pcre_extra *_re_extra;
+    CURL *_curl;
+    char *_curl_error;
 
-	std::string _ip;
+    pcre *_re;
+    pcre_extra *_re_extra;
+
+    std::string _ip;
 };
 
 #endif

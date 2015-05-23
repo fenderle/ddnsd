@@ -5,13 +5,13 @@
 
 int main(int argc, char *argv[])
 {
-	App app;
+    App app;
 
-	app.setConfig(Config());
-	if (app.refreshIP())
-		std::cout << "IP is: " << app.ip() << std::endl;
-	else
-		std::cout << app.lastError() << std::endl;
+    app.setConfig(Config());
+    if (app.refreshIP())
+        std::cout << "IP is: " << app.ip() << std::endl;
+    else
+        std::cout << app.lastError() << std::endl;
 
-	return 0;
+    return 0;
 }
