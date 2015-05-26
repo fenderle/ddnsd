@@ -40,7 +40,8 @@ perldoc -o nroff -d %{name}.8 -w center:%{name} -w section:8 %{name}
 %{__install} -m 755 contrib/rhel7/ddnsd.NetworkManager %{buildroot}/%{_sysconfdir}/NetworkManager/dispatcher.d/50-%{name}
 %{__mkdir_p} %{buildroot}/%{_unitdir}/
 %{__install} -m 755 contrib/rhel7/ddnsd.service %{buildroot}/%{_unitdir}/%{name}.service
-%{__mkdir_p} %{buildroot}/%{_localstatedir}/run/%{name}
+%{__mkdir_p} %{buildroot}/%{_tmpfilesdir}/
+%{__install} -m 644 contrib/rhel7/ddnsd.tmpfilesd %{buildroot}/%{_tmpfilesdir}/%{name}.conf
 
 %post
 %systemd_post ddnsd.service
@@ -60,7 +61,7 @@ perldoc -o nroff -d %{name}.8 -w center:%{name} -w section:8 %{name}
 %{_mandir}/man8/%{name}.8.gz
 %{_sysconfdir}/NetworkManager/dispatcher.d/50-%{name}
 %{_unitdir}/%{name}.service
-%dir %{_localstatedir}/run/%{name}/
+%{_tmpfilesdir}/%{name}.conf
 
 %changelog
 * Fri May 22 2015 Frank Enderle <frank.enderle@anamica.de> 1.0.2-1
